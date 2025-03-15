@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редагування продукту</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            color: #333;
+        }
+
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        form p {
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>Редагувати {{ product.name }}</h1>
+
+    <div class="container">
+        <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <label for="id_name">Назва:</label>
+    {{ form.name }}
+
+    <label for="id_price">Ціна:</label>
+    {{ form.price }}
+
+    <label for="id_category">Категорія:</label>
+    {{ form.category }}
+
+    <label for="id_suppliers">Постачальники:</label>
+    <select name="suppliers" id="id_suppliers" multiple>
+        {% for supplier in form.suppliers.field.queryset %}
+            <option value="{{ supplier.id }}" {% if supplier in form.suppliers.value %}selected{% endif %}>
+                {{ supplier.name }} {{ supplier.surname }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <label for="id_image">Зображення:</label>
+    {{ form.image }}
+
+    <button type="submit">Зберегти</button>
+</form>
+        <a href="{% url 'product_list' %}">Назад до списку товарів</a>
+    </div>
+
+</body>
+</html>
+

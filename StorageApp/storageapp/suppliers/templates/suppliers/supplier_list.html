@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Постачальники</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 90%;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .search-box,
+        .category-filter {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        input[type="text"],
+        select {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .supplier-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .sort-filter {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .supplier-card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .supplier-card h3 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .supplier-card p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .supplier-card .price {
+            font-size: 18px;
+            color: #007BFF;
+            font-weight: bold;
+        }
+
+        .empty-message {
+            text-align: center;
+            font-size: 18px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Постачальники</h1>
+
+        <div class="search-box">
+            <form method="GET">
+                <input type="text" name="q" value="{{ query }}" placeholder="Пошук постачальників...">
+                <button type="submit">Шукати</button>
+            </form>
+        </div>
+
+        <h1>
+            <a href="{% url 'redirect_to_products' %}">
+                <button>Продукти</button>
+            </a>
+        </h1>
+        <div class="sort-filter">
+            <form method="GET">
+                <input type="hidden" name="q" value="{{ query }}">
+                <label for="sort">Сортувати:</label>
+                <select name="sort" id="sort" onchange="this.form.submit()">
+                    <option value="name" {% if sort_option == 'name' %}selected{% endif %}>За ім'ям</option>
+                    <option value="surname" {% if sort_option == 'surname' %}selected{% endif %}>За прізвищем</option>
+                </select>
+            </form>
+        </div>
+
+        <h1>
+            <a href="{% url 'add_supplier' %}">
+                <button>➕ Додати постачальника</button>
+            </a>
+        </h1>
+
+        <div class="supplier-list">
+            {% for supplier in suppliers %}
+                <div class="supplier-card">
+                    <h3>{{ supplier.name }}</h3>
+                    <p>Ім'я: {{ supplier.name }}</p>
+                    <p>Прізвище: {{ supplier.surname }}</p>
+                    <p>По-батькові: {{ supplier.po_batkovi }}</p>
+                    <p>Контактні дані: {{ supplier.contact_info }}</p>
+                    <a href="{% url 'edit_supplier' supplier.id %}">
+                        <button>Редагувати</button>
+                    </a>
+                    <h1>
+                        <a href="{% url 'delete_supplier' supplier.id%}" onclick="return confirm('Ви впевнені?');">
+                            <button>🗑 Видалити постачальника</button>
+                        </a>
+                    </h1>
+                </div>
+            {% empty %}
+                <p class="empty-message">Немає постачальників.</p>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

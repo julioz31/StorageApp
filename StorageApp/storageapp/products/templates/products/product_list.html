@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список продуктів</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .filters {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        input, select, button {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .category-management, .product-management {
+            text-align: right;
+            margin-bottom: 10px;
+        }
+        .category-list, .product-list {
+            margin-top: 20px;
+        }
+        .category-item, .product-card {
+            background: #f8f8f8;
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .product-card {
+            flex-direction: column;
+            text-align: center;
+        }
+        .product-card img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        .product-actions {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+        .empty-message {
+            text-align: center;
+            font-size: 18px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Список продуктів</h1>
+
+        <div class="filters">
+            <form method="GET">
+                <input type="text" name="q" value="{{ query }}" placeholder="Пошук товарів...">
+                <button type="submit">🔍 Шукати</button>
+            </form>
+            <form method="GET">
+                <select name="category" onchange="this.form.submit()">
+                    <option value="">Всі категорії</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}" {% if selected_category == category.id|stringformat:"s" %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+
+        <h1>
+            <a href="{% url 'redirect_to_suppliers' %}">
+                <button>Постачальники</button>
+            </a>
+        </h1>
+
+        <h1>
+            <a href="{% url 'create_category' %}">
+                <button>➕ Додати категорію</button>
+            </a>
+        </h1>
+
+        <div class="category-list">
+            {% for category in categories %}
+                <div class="category-item">
+                    <span>{{ category.name }}</span>
+                    <div>
+                        <a href="{% url 'edit_category' category.id %}"><button>✏️</button></a>
+                        <a href="{% url 'delete_category' category.id %}" onclick="return confirm('Ви впевнені?');">
+                            <button style="color: red;">🗑️</button>
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <h1>
+            <a href="{% url 'create_product' %}">
+                <button>➕ Додати продукт</button>
+            </a>
+        </h1>
+
+        <div class="product-list">
+            {% for product in products %}
+                <div class="product-card">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                    <h3>{{ product.name }}</h3>
+                    <p>Категорія: {{ product.category.name }}</p>
+                    <p>Ціна: <strong class="price">{{ product.price }} грн</strong></p>
+                    <p>Кількість: {{ product.number }}</p>
+                    <p>Постачальники:
+                        {% for supplier_product in product.supplierproduct_set.all %}
+                            {{ supplier_product.supplier.surname }}{{" "}}{{ supplier_product.supplier.name }}{{" "}}{{ supplier_product.supplier.po_batkovi }} {% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </p>
+                    <div class="product-actions">
+                        <a href="{% url 'edit_product' product.id %}"><button>✏️</button></a>
+                        <a href="{% url 'delete_product' product.id %}" onclick="return confirm('Ви впевнені?');">
+                            <button style="color: red;">🗑️</button>
+                        </a>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="empty-message">Немає товарів.</p>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
